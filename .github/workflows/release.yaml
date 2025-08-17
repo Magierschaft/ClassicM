@@ -1,4 +1,7 @@
 name: Release
+permissions:
+  contents:
+    write
 on:
   workflow_dispatch:
     inputs:
@@ -18,6 +21,7 @@ jobs:
       run: |
           echo "VERSION=${{ inputs.version }}" >> $env:GITHUB_ENV
     - name: Update settings
+      if: ${{ github.repository }} == 'Reetus/ClassicAssist'
       run: |
           $file = 'ClassicAssist.Shared\Settings.settings'
           $designerFile = 'ClassicAssist.Shared\Settings.Designer.cs'
@@ -112,11 +116,11 @@ jobs:
         $json | Out-File MANIFEST.json
 
     - name: Zip output
-      run: Compress-Archive -Path Output/net48/* -DestinationPath ClassicAssist.zip
+      run: Compress-Archive -Path Output/net48/* -DestinationPath ${{ github.event.repository.name }}.zip
     - name: Draft Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: ClassicAssist.zip
+        artifacts: ${{ github.event.repository.name }}.zip
         tag: ${{ inputs.version }}
         name: ${{ inputs.version }}
         commit: ${{ github.sha }}

@@ -1,13 +1,13 @@
 name: Sentry
 on:
   release:
-    type:
+    types:
       - released
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.action != 'deleted'
+    if: github.event.action != 'deleted' && "${{ github.repository }}" == 'Reetus/ClassicAssist'
     steps:
       - name: Release Info Action
         id: latest_version

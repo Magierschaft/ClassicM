@@ -1,7 +1,7 @@
 name: Update Wiki
 on:
   release:
-    type:
+    types:
       - released
   workflow_dispatch:
 jobs:
@@ -35,14 +35,13 @@ jobs:
           $fullPath = (Get-Location).Path
           .\ExportCommands.exe $fullPath\ClassicAssist.dll
     - name: Checkout Wiki
-      run: git clone https://github.com/Reetus/ClassicAssist.wiki.git
+      run: git clone https://github.com/${{ github.repository }}.wiki.git
     - name: Update Wiki
       run: |
-          git config --global user.email "reeeetus@gmail.com"
-          git config --global user.name "Reetus"
-          cd ClassicAssist.wiki
+          git config --global user.name "Update Wiki Action"
+          cd ${{ github.event.repository.name }}.wiki
           copy ..\Output\net48\Docs\*.md .
           git add *
           git commit -m "Update Wiki"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Reetus/ClassicAssist.wiki.git
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
           git push
