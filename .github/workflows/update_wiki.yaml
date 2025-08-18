@@ -1,4 +1,7 @@
 name: Update Wiki
+permissions:
+  contents:
+    write
 on:
   release:
     types:
@@ -8,13 +11,18 @@ jobs:
   build:
     runs-on: windows-latest
     if: |
-      github.event_name == 'release' &&
+      (github.event_name == 'release' &&
       github.event.release.prerelease == false &&
-      github.event.action != 'deleted'
+      github.event.action != 'deleted') || github.event_name == 'workflow_dispatch'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
+    - uses: actions/checkout@v5
+      with:
+        repository: ${{ github.repository }}.wiki
+        fetch-depth: 0
+        path: ${{ github.event.repository.name }}.wiki
     - name: Set version
       id: version
       run: |
@@ -34,10 +42,9 @@ jobs:
           cd Output\net48
           $fullPath = (Get-Location).Path
           .\ExportCommands.exe $fullPath\ClassicAssist.dll
-    - name: Checkout Wiki
-      run: git clone https://github.com/${{ github.repository }}.wiki.git
     - name: Update Wiki
       run: |
+          git config --global user.email "actions@localhost"
           git config --global user.name "Update Wiki Action"
           cd ${{ github.event.repository.name }}.wiki
           copy ..\Output\net48\Docs\*.md .
