@@ -23,6 +23,7 @@ namespace ClassicAssist.UO.Objects
             Equipment = new ItemCollection( serial );
         }
 
+        public override bool IsNPC => true;
         public Item Backpack => Engine.Items.GetItem( GetLayer( Layer.Backpack ) );
         public ItemCollection Equipment { get; set; }
 

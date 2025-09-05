@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Assistant;
+﻿using Assistant;
 using ClassicAssist.Data.Abilities;
 using ClassicAssist.Misc;
 using ClassicAssist.Shared.Resources;
@@ -12,6 +8,10 @@ using ClassicAssist.UO.Network;
 using ClassicAssist.UO.Network.PacketFilter;
 using ClassicAssist.UO.Network.Packets;
 using ClassicAssist.UO.Objects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using UOC = ClassicAssist.UO.Commands;
 
 namespace ClassicAssist.Data.Macros.Commands
@@ -201,14 +201,14 @@ namespace ClassicAssist.Data.Macros.Commands
             return count;
         }
 
+
+
         [CommandsDisplay( Category = nameof( Strings.Entity ),
             Parameters = new[]
             {
-                nameof( ParameterType.ItemID ), nameof( ParameterType.Range ),
-                nameof( ParameterType.SerialOrAlias ), nameof( ParameterType.Hue ), nameof( ParameterType.Amount )
+                nameof( ParameterType.EntityPredicate ), nameof( ParameterType.Range ), nameof( ParameterType.SerialOrAlias )
             } )]
-        public static bool FindType( int graphic, int range = -1, object findLocation = null, int hue = -1,
-            int minimumStackAmount = -1 )
+        public static bool Find( Func<Entity, bool> predicateFunction, int range = -1, object findLocation = null )
         {
             int owner = 0;
 
@@ -219,25 +219,18 @@ namespace ClassicAssist.Data.Macros.Commands
 
             Entity entity;
 
-            bool Predicate( Entity i )
-            {
-                return ( graphic == -1 || i.ID == graphic ) && ( hue == -1 || i.Hue == hue ) &&
-                       ( minimumStackAmount == -1 || !( i is Item ) ||
-                         i is Item itm && itm.Count >= minimumStackAmount ) && !IgnoreList.Contains( i.Serial );
-            }
-
             if ( owner != 0 )
             {
-                entity = Engine.Items.SelectEntities( i => Predicate( i ) && i.IsDescendantOf( owner, range ) )
+                entity = Engine.Items.SelectEntities( i => predicateFunction( i ) && i.IsDescendantOf( owner, range ) )
                     ?.FirstOrDefault();
             }
             else
             {
                 entity =
                     (Entity) Engine.Mobiles
-                        .SelectEntities( i => Predicate( i ) && ( range == -1 || i.Distance < range ) )
+                        .SelectEntities( i => predicateFunction( i ) && ( range == -1 || i.Distance < range ) )
                         ?.FirstOrDefault() ?? Engine.Items.SelectEntities( i =>
-                        Predicate( i ) && ( range == -1 || i.Distance <= range ) && i.Owner == 0 )?.FirstOrDefault();
+                        predicateFunction( i ) && ( range == -1 || i.Distance <= range ) && i.Owner == 0 )?.FirstOrDefault();
             }
 
             if ( entity == null )
@@ -253,6 +246,25 @@ namespace ClassicAssist.Data.Macros.Commands
             return true;
         }
 
+            [CommandsDisplay( Category = nameof( Strings.Entity ),
+            Parameters = new[]
+            {
+                nameof( ParameterType.ItemID ), nameof( ParameterType.Range ),
+                nameof( ParameterType.SerialOrAlias ), nameof( ParameterType.Hue ), nameof( ParameterType.Amount )
+            } )]
+        public static bool FindType( int graphic, int range = -1, object findLocation = null, int hue = -1,
+            int minimumStackAmount = -1 )
+        {
+            bool Predicate( Entity i )
+            {
+                return ( graphic == -1 || i.ID == graphic ) && ( hue == -1 || i.Hue == hue ) &&
+                       ( minimumStackAmount == -1 || !( i is Item ) ||
+                         i is Item itm && itm.Count >= minimumStackAmount ) && !IgnoreList.Contains( i.Serial );
+            }
+
+            return Find( Predicate, range, findLocation );
+        }
+
         [CommandsDisplay( Category = nameof( Strings.Entity ),
             Parameters = new[]
             {
@@ -261,54 +273,14 @@ namespace ClassicAssist.Data.Macros.Commands
             } )]
         public static bool FindObject( object obj, int range = -1, object findLocation = null )
         {
-            int owner = 0;
-
             int serial = AliasCommands.ResolveSerial( obj );
-
-            if ( serial == 0 )
-            {
-                UOC.SystemMessage( Strings.Invalid_or_unknown_object_id, true );
-
-                return false;
-            }
-
-            if ( findLocation != null )
-            {
-                owner = AliasCommands.ResolveSerial( findLocation );
-            }
-
-            Entity entity;
 
             bool Predicate( Entity i )
             {
                 return i.Serial == serial;
             }
 
-            if ( owner != 0 )
-            {
-                entity = Engine.Items.SelectEntities( i => Predicate( i ) && i.IsDescendantOf( owner, range ) )
-                    ?.FirstOrDefault();
-            }
-            else
-            {
-                entity =
-                    (Entity) Engine.Mobiles
-                        .SelectEntities( i => Predicate( i ) && ( range == -1 || i.Distance < range ) )
-                        ?.FirstOrDefault() ?? Engine.Items.SelectEntities( i =>
-                        Predicate( i ) && ( range == -1 || i.Distance <= range ) && i.Owner == 0 )?.FirstOrDefault();
-            }
-
-            if ( entity == null )
-            {
-                AliasCommands.UnsetAlias( "found" );
-                return false;
-            }
-
-            AliasCommands.SetMacroAlias( "found", entity.Serial );
-
-            UOC.SystemMessage( string.Format( Strings.Object___0___updated___, "found" ), true );
-
-            return true;
+            return Find( Predicate, range, findLocation );
         }
 
         [CommandsDisplay( Category = nameof( Strings.Entity ),

@@ -223,6 +223,21 @@ namespace ExportCommands.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A lambda or a defined function that can be of one of the following types with these defined properties:
+        ///
+        ///All of them: Direction, Distance, Hue, ID (in other places called &quot;graphic&quot;), Name, Properties, Serial, X, Y, Z
+        ///
+        ///Only Items: IsItem=true, ArtDataID, Container / IsContainer, Count, Flags, Grid, Layer, Light, Owner, RootOwner
+        ///
+        ///Only Mobiles: IsMobile=true, Backpack, Equipment, HealthbarColour, Hits, HitsMax, IsDead, IsFrozen, IsMounted, IsPoisoned, IsRenamable, IsYellowHits, Mana, ManaMax, Mount, Not [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string PARAMETER_DESCRIPTION_ENTITYPREDICATE {
+            get {
+                return ResourceManager.GetString("PARAMETER_DESCRIPTION_ENTITYPREDICATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gump button ID.
         /// </summary>
         public static string PARAMETER_DESCRIPTION_GUMPBUTTONINDEX {

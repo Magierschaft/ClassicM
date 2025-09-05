@@ -174,6 +174,15 @@
   <data name="PARAMETER_DESCRIPTION_SERIALORALIAS" xml:space="preserve">
     <value>An entity serial in integer or hex format, or an alias string such as "self"</value>
   </data>
+  <data name="PARAMETER_DESCRIPTION_ENTITYPREDICATE" xml:space="preserve">
+    <value>A lambda or a defined function that can be of one of the following types with these defined properties:
+
+All of them: Direction, Distance, Hue, ID (in other places called "graphic"), Name, Properties, Serial, X, Y, Z
+
+Only Items: IsItem=true, ArtDataID, Container / IsContainer, Count, Flags, Grid, Layer, Light, Owner, RootOwner
+
+Only Mobiles: IsMobile=true, Backpack, Equipment, HealthbarColour, Hits, HitsMax, IsDead, IsFrozen, IsMounted, IsPoisoned, IsRenamable, IsYellowHits, Mana, ManaMax, Mount, Notoriety, Pets, ShopBuy, Stamina, StaminaMax, Status, GetEquippedItems()</value>
+  </data>
   <data name="PARAMETER_DESCRIPTION_SHOWTYPE" xml:space="preserve">
     <value>Show type - "mobiles" or "corpses"</value>
   </data>

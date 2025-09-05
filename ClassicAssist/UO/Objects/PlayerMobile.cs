@@ -19,6 +19,9 @@ namespace ClassicAssist.UO.Objects
         {
         }
 
+        public override bool IsNPC => false;
+        public override bool IsPlayer => true;
+
         public int ColdResistance { get; set; }
         public int ColdResistanceMax { get; set; }
         public int Damage { get; set; }

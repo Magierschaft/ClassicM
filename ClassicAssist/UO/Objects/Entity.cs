@@ -8,6 +8,10 @@ namespace ClassicAssist.UO.Objects
 {
     public abstract class Entity : IEquatable<Entity>
     {
+        public virtual bool IsItem => false;
+        public virtual bool IsNPC => false;
+        public virtual bool IsPlayer => false;
+
         protected Entity( int serial )
         {
             Serial = serial;

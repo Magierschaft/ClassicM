@@ -19,6 +19,8 @@ namespace ClassicAssist.UO.Objects
             Owner = containerSerial;
         }
 
+        public override bool IsItem => true;
+
         public int ArtDataID { get; set; }
         public ItemCollection Container { get; set; }
         public int Count { get; set; } = 1;
