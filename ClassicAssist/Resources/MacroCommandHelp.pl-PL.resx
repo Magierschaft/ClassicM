@@ -117,6 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MOVETYPE_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># żeby przenieść przedmiot do innego kontenera
+
+MoveType(0x170f, "backpack", "bank")
+
+# celem może być ziemia poprzez ustawienie kontenera docelowego na -1 oraz dodanie koordynatów
+
+MoveType(0x170f, "backpack", -1, 1928, 2526, 0)
+
+# parametry opcjonalne to kolor oraz ilość. Żeby przenieść max 10 o kolorze 50...
+
+MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
+  </data>
   <data name="CLEARABILITY_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Wyczyść umiejętności broni
 </value>
@@ -451,8 +464,14 @@
   <data name="FINDTYPE_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Szuka obiektu po ID grafiki i ustawia alias "found". Domyślnie wybrana ziemia jeśli nie podano źródła.</value>
   </data>
+  <data name="FIND_COMMAND_DESCRIPTION" xml:space="preserve">
+    <value />
+  </data>
   <data name="FINDTYPE_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>FindType(0xff)</value>
+  </data>
+  <data name="FIND_COMMAND_INSERTTEXT" xml:space="preserve">
+    <value />
   </data>
   <data name="FOLLOWERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Zwraca liczbę podązających zwerząt zgodnie z oknem statusu postaci.</value>
@@ -1153,6 +1172,29 @@ if FindWand("fireball", "backpack", 5):
   <data name="SETAUTOLOOTCONTAINER_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>SetAutolootContainer("backpack")</value>
   </data>
+  <data name="FINDTYPE_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># szuka przedmiotu jedzenia z listy i jeśli znajdzie je 1 sztukę.
+if not ListExists("food"):
+ CreateList("food")
+ PushList("food", 0x9b7) #bird
+ PushList("food", 0x9d3) #ham
+ PushList("food", 0x97d) #cheese
+ PushList("food", 0x9d0) #apple
+ PushList("food", 0x9eb) #muffin
+ PushList("food", 0x97b) #fishsteak
+ PushList("food", 0x9c0) #sausage
+ PushList("food", 0x9f2) #ribs
+ PushList("food", 0x9d1) #grapes
+ PushList("food", 0x9d2) #peach
+
+for i in GetList("food"):
+ if FindType(i, -1, "backpack"):
+  UseObject("found")
+  break</value>
+  </data>
+  <data name="FIND_COMMAND_EXAMPLE" xml:space="preserve">
+    <value />
+  </data>
   <data name="REPLAY_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Odgrywa ponownie obecne makro.</value>
   </data>
@@ -1189,6 +1231,22 @@ if FindWand("fireball", "backpack", 5):
   <data name="WAITFORTARGETORFIZZLE_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>WaitForTargetOrFizzle(5000)</value>
   </data>
+  <data name="SYSMESSAGE_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># domyślny kolor 
+SysMessage("Hello")
+# zdefiniowany kolor
+SysMessage("Hello", 35)</value>
+  </data>
+  <data name="FINDOBJECT_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># znajdź na ziemi
+FindObject("mount")
+
+# znajdź na ziemi w zakresie kratek
+FindObject("mount", 10)
+
+# znajdź w kontenerze, trzeba podać poziom szukania albo -1
+FindObject("weapon", -1, "backpack")  </value>
+  </data>
   <data name="CHATMSG_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Wysyła wiadomość na chacie.</value>
   </data>
@@ -1212,6 +1270,14 @@ if FindWand("fireball", "backpack", 5):
   </data>
   <data name="OPENQUESTSGUMP_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>OpenQuestsGump()</value>
+  </data>
+  <data name="GETENEMY_COMMAND_EXAMPLE" xml:space="preserve">
+    <value>#pobierz morderdę
+GetEnemy(['Murderer'])
+#pobierz najbliższego mordercę, każdy rodzaj ciała
+GetEnemy(['Murderer'], 'Any', 'Closest')
+#pobierz jakąkolwiek postać, humanoida lub po transformacji - bez mount'a
+GetEnemy(['Any'], 'Both', 'Next', 'Unmounted')</value>
   </data>
   <data name="TARGETXYZ_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Wybiera za cel ziemie o podanych koordynatach.</value>
@@ -1277,8 +1343,21 @@ TargetTileOffset(0, 1, 0)</value>
   <data name="SKILLCAP_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Zwraca skill cap podanego skilla</value>
   </data>
+  <data name="STOP_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># zatrzymanie obecnego makra
+Stop()
+# zatrzymanie obecnego makra z podaniem nazwy
+Stop("Background Macro")</value>
+  </data>
   <data name="HIDEENTITY_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Usuwa przedmiot/obiekt mobile z ekranu</value>
+  </data>
+  <data name="HIDEENTITY_COMMAND_EXAMPLE" xml:space="preserve">
+    <value>ClearIgnoreList()
+#Ukrycie wszystkich zwłok na ekranie
+while FindType(0x2006):
+ HideEntity('found')
+ IgnoreObject('found')</value>
   </data>
   <data name="USETARGETEDITEM_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Używa podanego przedmiotu lub celu w jednej akcji. Wymaga wsparcia OSI/ServUO</value>
@@ -1286,24 +1365,19 @@ TargetTileOffset(0, 1, 0)</value>
   <data name="USELAYER_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Używa obiektu w podanym layerze, opcjonalnie można podać parametr obiektu mobile</value>
   </data>
-  <data name="MOVETYPE_COMMAND_EXAMPLE" xml:space="preserve">
-    <value># żeby przenieść przedmiot do innego kontenera
-
-MoveType(0x170f, "backpack", "bank")
-
-# celem może być ziemia poprzez ustawienie kontenera docelowego na -1 oraz dodanie koordynatów
-
-MoveType(0x170f, "backpack", -1, 1928, 2526, 0)
-
-# parametry opcjonalne to kolor oraz ilość. Żeby przenieść max 10 o kolorze 50...
-
-MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
-  </data>
   <data name="DISPLAYQUESTPOINTER_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Pokaż wskaźnik dla podanych koordynatów</value>
   </data>
   <data name="PATHFIND_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Prosi klienta, żeby wyszukał drogę do podanych koordynatów / przedmiotu</value>
+  </data>
+  <data name="PATHFIND_COMMAND_EXAMPLE" xml:space="preserve">
+    <value>#Znajdywanie drogi do koordynat
+Pathfind(1438, 1630, 20)
+
+#Znajdywanie drogi do postaci
+SetEnemy(0x3c9)
+Pathfind('enemy')</value>
   </data>
   <data name="SETORGANIZERCONTAINERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Ustaw źródło i cel dla konkretnej nazwy organizera</value>
@@ -1328,71 +1402,6 @@ MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
   </data>
   <data name="SNAPSHOT_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Zrób zrzut ekranu</value>
-  </data>
-  <data name="FINDTYPE_COMMAND_EXAMPLE" xml:space="preserve">
-    <value># szuka przedmiotu jedzenia z listy i jeśli znajdzie je 1 sztukę.
-if not ListExists("food"):
- CreateList("food")
- PushList("food", 0x9b7) #bird
- PushList("food", 0x9d3) #ham
- PushList("food", 0x97d) #cheese
- PushList("food", 0x9d0) #apple
- PushList("food", 0x9eb) #muffin
- PushList("food", 0x97b) #fishsteak
- PushList("food", 0x9c0) #sausage
- PushList("food", 0x9f2) #ribs
- PushList("food", 0x9d1) #grapes
- PushList("food", 0x9d2) #peach
-
-for i in GetList("food"):
- if FindType(i, -1, "backpack"):
-  UseObject("found")
-  break</value>
-  </data>
-  <data name="SYSMESSAGE_COMMAND_EXAMPLE" xml:space="preserve">
-    <value># domyślny kolor 
-SysMessage("Hello")
-# zdefiniowany kolor
-SysMessage("Hello", 35)</value>
-  </data>
-  <data name="FINDOBJECT_COMMAND_EXAMPLE" xml:space="preserve">
-    <value># znajdź na ziemi
-FindObject("mount")
-
-# znajdź na ziemi w zakresie kratek
-FindObject("mount", 10)
-
-# znajdź w kontenerze, trzeba podać poziom szukania albo -1
-FindObject("weapon", -1, "backpack")  </value>
-  </data>
-  <data name="GETENEMY_COMMAND_EXAMPLE" xml:space="preserve">
-    <value>#pobierz morderdę
-GetEnemy(['Murderer'])
-#pobierz najbliższego mordercę, każdy rodzaj ciała
-GetEnemy(['Murderer'], 'Any', 'Closest')
-#pobierz jakąkolwiek postać, humanoida lub po transformacji - bez mount'a
-GetEnemy(['Any'], 'Both', 'Next', 'Unmounted')</value>
-  </data>
-  <data name="STOP_COMMAND_EXAMPLE" xml:space="preserve">
-    <value># zatrzymanie obecnego makra
-Stop()
-# zatrzymanie obecnego makra z podaniem nazwy
-Stop("Background Macro")</value>
-  </data>
-  <data name="HIDEENTITY_COMMAND_EXAMPLE" xml:space="preserve">
-    <value>ClearIgnoreList()
-#Ukrycie wszystkich zwłok na ekranie
-while FindType(0x2006):
- HideEntity('found')
- IgnoreObject('found')</value>
-  </data>
-  <data name="PATHFIND_COMMAND_EXAMPLE" xml:space="preserve">
-    <value>#Znajdywanie drogi do koordynat
-Pathfind(1438, 1630, 20)
-
-#Znajdywanie drogi do postaci
-SetEnemy(0x3c9)
-Pathfind('enemy')</value>
   </data>
   <data name="SNAPSHOT_COMMAND_EXAMPLE" xml:space="preserve">
     <value>#Wykonanie zrzutu samego klienta, brak opóźnienia, domyślna nazwa pliku

@@ -285,6 +285,9 @@
   <data name="FINDTYPE_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>개체에 대한 이미지 정보를 찾습니다.  해당 개체에 대한 정보가 없으면 기본 값으로 변경됩니다.</value>
   </data>
+  <data name="FIND_COMMAND_DESCRIPTION" xml:space="preserve">
+    <value />
+  </data>
   <data name="FOLLOWERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>상태 표시 줄에 현재 팔로워 수를 표시합니다.</value>
   </data>

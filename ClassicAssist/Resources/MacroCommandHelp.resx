@@ -462,8 +462,15 @@ MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
   <data name="FINDTYPE_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Searches for entity by graphic ID and sets found alias, defaults to ground if no source given.</value>
   </data>
+  <data name="FIND_COMMAND_DESCRIPTION" xml:space="preserve">
+    <value>Searches for entity by given predicate function. Sets found alias, defaults to ground if no source given.</value>
+  </data>
   <data name="FINDTYPE_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>FindType(0xff)</value>
+  </data>
+  <data name="FIND_COMMAND_INSERTTEXT" xml:space="preserve">
+    <value>if Find(lambda entity: entity.IsItem and entity.Count == 34 and entity.Hue == 0, -1, "backpack"):
+ print( Name("found") )</value>
   </data>
   <data name="FOLLOWERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Returns the number of current followers as per status bar data.</value>
@@ -1183,6 +1190,18 @@ for i in GetList("food"):
  if FindType(i, -1, "backpack"):
   UseObject("found")
   break</value>
+  </data>
+  <data name="FIND_COMMAND_EXAMPLE" xml:space="preserve">
+    <value># Variant with function
+def IsLamb(entity):
+ return entity.IsNPC and entity.Name == "Lamb"
+
+if Find(IsLamb):
+ print( Hits("found") )
+
+# Variant with lambda
+if Find(lambda entity: entity.IsItem and entity.Count == 34 and entity.Hue == 0, -1, "backpack"):
+ print( Name("found") )</value>
   </data>
   <data name="REPLAY_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Replay the current macro</value>

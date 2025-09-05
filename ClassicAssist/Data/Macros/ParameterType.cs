@@ -63,6 +63,7 @@ namespace ClassicAssist.Data.Macros
         Boolean,
         ElementValueFrontBack,
         StringArray,
-        Parameters
+        Parameters,
+        EntityPredicate
     }
 }

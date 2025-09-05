@@ -1255,6 +1255,43 @@ namespace ClassicAssist.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Searches for entity by given predicate function. Sets found alias, defaults to ground if no source given..
+        /// </summary>
+        public static string FIND_COMMAND_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("FIND_COMMAND_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Variant with function
+        ///def IsLamb(entity):
+        /// return entity.IsNPC and entity.Name == &quot;Lamb&quot;
+        ///
+        ///if Find(IsLamb):
+        /// print( Hits(&quot;found&quot;) )
+        ///
+        ///# Variant with lambda
+        ///if Find(lambda entity: entity.IsItem and entity.Count == 34 and entity.Hue == 0, -1, &quot;backpack&quot;):
+        /// print( Name(&quot;found&quot;) ).
+        /// </summary>
+        public static string FIND_COMMAND_EXAMPLE {
+            get {
+                return ResourceManager.GetString("FIND_COMMAND_EXAMPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to if Find(lambda entity: entity.IsItem and entity.Count == 34 and entity.Hue == 0, -1, &quot;backpack&quot;):
+        /// print( Name(&quot;found&quot;) ).
+        /// </summary>
+        public static string FIND_COMMAND_INSERTTEXT {
+            get {
+                return ResourceManager.GetString("FIND_COMMAND_INSERTTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Returns true if alias serial can be found on screen, false if not..
         /// </summary>
         public static string FINDALIAS_COMMAND_DESCRIPTION {
@@ -4133,6 +4170,24 @@ namespace ClassicAssist.Resources {
         public static string STR_COMMAND_INSERTTEXT {
             get {
                 return ResourceManager.GetString("STR_COMMAND_INSERTTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return SwingSpeed Increase value..
+        /// </summary>
+        public static string SWINGSPEEDINCREASE_COMMAND_DESCRIPTION {
+            get {
+                return ResourceManager.GetString("SWINGSPEEDINCREASE_COMMAND_DESCRIPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ssi = SwingSpeedIncrease().
+        /// </summary>
+        public static string SWINGSPEEDINCREASE_COMMAND_INSERTTEXT {
+            get {
+                return ResourceManager.GetString("SWINGSPEEDINCREASE_COMMAND_INSERTTEXT", resourceCulture);
             }
         }
         
