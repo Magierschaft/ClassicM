@@ -462,14 +462,8 @@ MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
   <data name="FINDTYPE_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Cerca per un seriale grafico e lo imposta come found. Cerca in schermata, se nessuna origine è indicata </value>
   </data>
-  <data name="FIND_COMMAND_DESCRIPTION" xml:space="preserve">
-    <value />
-  </data>
   <data name="FINDTYPE_COMMAND_INSERTTEXT" xml:space="preserve">
     <value>FindType(0xff)</value>
-  </data>
-  <data name="FIND_COMMAND_INSERTTEXT" xml:space="preserve">
-    <value />
   </data>
   <data name="FOLLOWERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Riporta il numero di Followers</value>

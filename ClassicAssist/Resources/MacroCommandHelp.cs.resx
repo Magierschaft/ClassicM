@@ -297,9 +297,6 @@ MoveType(0x170f, "backpack", "bank", -1, -1, 0, 50, 10)</value>
   <data name="FINDTYPE_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Vyhledá objekt podle ID itemu a nastaví alias "found", hledá na zemi pokud není zadaný cíl.</value>
   </data>
-  <data name="FIND_COMMAND_DESCRIPTION" xml:space="preserve">
-    <value />
-  </data>
   <data name="FOLLOWERS_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Vrátí počet aktuálních následovnícků podle dat ze statusu.</value>
   </data>
@@ -673,9 +670,6 @@ for i in GetList("food"):
  if FindType(i, -1, "backpack"):
   UseObject("found")
   break</value>
-  </data>
-  <data name="FIND_COMMAND_EXAMPLE" xml:space="preserve">
-    <value />
   </data>
   <data name="REPLAY_COMMAND_DESCRIPTION" xml:space="preserve">
     <value>Zopakuje aktuální makro.</value>
