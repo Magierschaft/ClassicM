@@ -174,9 +174,6 @@
   <data name="PARAMETER_DESCRIPTION_SERIALORALIAS" xml:space="preserve">
     <value>identyfikator lub liczba lub hex albo alias np 'self'</value>
   </data>
-  <data name="PARAMETER_DESCRIPTION_ENTITYPREDICATE" xml:space="preserve">
-    <value />
-  </data>
   <data name="PARAMETER_DESCRIPTION_SHOWTYPE" xml:space="preserve">
     <value>Pokaż typy obiektów. Możliwe wartości "mobiles", lub "corpses"</value>
   </data>
@@ -266,9 +263,6 @@
   </data>
   <data name="See Also: {0}" xml:space="preserve">
     <value>Zobacz też: {0}</value>
-  </data>
-  <data name="PARAMETER_DESCRIPTION_EMPTY" xml:space="preserve">
-    <value />
   </data>
   <data name="Types" xml:space="preserve">
     <value>Typy</value>

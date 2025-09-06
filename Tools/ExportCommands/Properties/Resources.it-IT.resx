@@ -174,9 +174,6 @@
   <data name="PARAMETER_DESCRIPTION_SERIALORALIAS" xml:space="preserve">
     <value>Un'entità seriale in formato intero o esadecimale o una stringa alias come "self"</value>
   </data>
-  <data name="PARAMETER_DESCRIPTION_ENTITYPREDICATE" xml:space="preserve">
-    <value />
-  </data>
   <data name="PARAMETER_DESCRIPTION_SHOWTYPE" xml:space="preserve">
     <value>Mostra type - "mobiles" o "corpses"</value>
   </data>
