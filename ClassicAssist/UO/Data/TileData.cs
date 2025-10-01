@@ -97,10 +97,8 @@ namespace ClassicAssist.UO.Data
                         _staticData[idx].ID = (ushort)idx;
                         _staticData[idx].Flags = (TileFlags) ( isold ? tileData.ReadUInt32() : tileData.ReadUInt64() );
                         _staticData[idx].Weight = tileData.ReadByte();
-                        /*_staticData[idx].Layer =*/
-                        tileData.ReadByte();
-                        /*_staticData[idx].Count =*/
-                        tileData.ReadInt32();
+                        _staticData[idx].Layer = tileData.ReadByte();
+                        _staticData[idx].Quantity = tileData.ReadInt32();
                         /*_staticData[idx].AnimId =*/
                         tileData.ReadUInt16();
                         _staticData[idx].Hue = tileData.ReadUInt16();
@@ -155,7 +153,7 @@ namespace ClassicAssist.UO.Data
                 return Layer.Invalid;
             }
 
-            Layer layer = (Layer) td.Quality;
+            Layer layer = (Layer) td.Layer;
 
             return layer;
         }
