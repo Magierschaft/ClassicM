@@ -90,7 +90,7 @@ namespace ClassicAssist.UO
             if ( layer == Layer.Invalid )
             {
                 StaticTile tileData = TileData.GetStaticTile( item.ID );
-                layer = (Layer) tileData.Quality;
+                layer = (Layer) tileData.Layer;
             }
 
             if ( layer == Layer.Invalid )
@@ -112,7 +112,7 @@ namespace ClassicAssist.UO
             if ( layer == Layer.Invalid )
             {
                 StaticTile tileData = TileData.GetStaticTile( item.ID );
-                layer = (Layer) tileData.Quality;
+                layer = (Layer) tileData.Layer;
             }
 
             return EquipItem( item.Serial, layer, queuePriority );
@@ -206,13 +206,13 @@ namespace ClassicAssist.UO
         public static async Task<int> GetTargetSerialAsync( string message = "", int timeout = 30000 )
         {
             ( TargetType _, TargetFlags _, int serial, int _, int _, int _, int _ ) =
-                await GetTargetInfoAsync( message, timeout );
+                await GetTargetInfoAsync( message, timeout, true );
 
             return serial;
         }
 
         public static async Task<(TargetType, TargetFlags, int, int, int, int, int)> GetTargetInfoAsync(
-            string message = "", int timeout = 30000 )
+            string message = "", int timeout = 30000, bool objectTarget = false )
         {
             if ( string.IsNullOrEmpty( message ) )
             {
@@ -232,7 +232,7 @@ namespace ClassicAssist.UO
                 //TODO
                 PacketWriter pw = new PacketWriter( 19 );
                 pw.Write( (byte) 0x6C );
-                pw.Write( (byte) 1 );
+                pw.Write( (byte) ( objectTarget ? 0 : 1 ) );
                 pw.Write( value );
                 pw.Write( (byte) 0 );
                 pw.Fill();
@@ -430,7 +430,10 @@ namespace ClassicAssist.UO
 
         public static PacketWaitEntry[] GetFizzleWaitEntries()
         {
-            PacketWaitEntry targetWe = CreateWaitEntry( new PacketFilterInfo( 0x6C ) );
+            PacketWaitEntry targetWe = CreateWaitEntry( new PacketFilterInfo( 0x6C, new[]
+            {
+                PacketFilterConditions.ByteAtPositionCondition( 3, 6, true )
+            } ) );
 
             PacketWaitEntry fizzWe = CreateWaitEntry( new PacketFilterInfo( 0xC0,
                 new[]
@@ -492,8 +495,10 @@ namespace ClassicAssist.UO
             };
         }
 
-        public static (int, bool) WaitForTargetOrFizzle( int timeout )
+        public static (int, bool) WaitForTargetOrFizzle( int timeout, out int senderSerial )
         {
+            senderSerial = -1;
+
             PacketWaitEntry[] entries = GetFizzleWaitEntries();
 
             Engine.WaitingForTarget = true;
@@ -524,6 +529,12 @@ namespace ClassicAssist.UO
                 catch ( ThreadInterruptedException )
                 {
                     return ( -1, false );
+                }
+
+                if ( index == 0 )
+                {
+                    byte[] packet = entries[0].Packet;
+                    senderSerial = ( packet[2] << 24 ) | ( packet[3] << 16 ) | ( packet[4] << 8 ) | packet[5];
                 }
 
                 return ( index, index == 0 && tasks[0].Result );
