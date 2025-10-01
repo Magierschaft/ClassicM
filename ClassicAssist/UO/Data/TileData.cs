@@ -18,10 +18,7 @@ namespace ClassicAssist.UO.Data
         public static void Initialize( string dataPath )
         {
             _dataPath = dataPath;
-
-            Load();
         }
-
 
         private static void Load()
         {
@@ -122,11 +119,19 @@ namespace ClassicAssist.UO.Data
 
         public static LandTile GetLandTile( int index )
         {
+            if (_landData == null )
+            {
+                Load();
+            }
             return _landData[index];
         }
 
         public static StaticTile GetStaticTile( int index )
         {
+            if ( _staticData == null )
+            {
+                Load();
+            }
             try
             {
                 return _staticData[index];
