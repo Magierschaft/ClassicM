@@ -1,14 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using ClassicAssist.Data;
+﻿using ClassicAssist.Data;
 using ClassicAssist.Data.Hotkeys;
 using ClassicAssist.Shared.Resources;
 using ClassicAssist.UI.ViewModels;
 using ClassicAssist.UO.Data;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace ClassicAssist.Tests
 {
@@ -18,26 +18,21 @@ namespace ClassicAssist.Tests
         [TestMethod]
         public void WontDuplicateSkillsCategory()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WontThrowExceptionOnDeserializeNullConfig",
-                AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation );
+            const string localPath = @"C:\Users\johns\Desktop\KvG Client 2.0";
 
-            appDomain.DoCallBack( () =>
+            if ( !Directory.Exists( localPath ) )
             {
-                const string localPath = @"C:\Users\johns\Desktop\KvG Client 2.0";
+                Debug.WriteLine( "Not running test, requires Cliloc.enu" );
+                return;
+            }
 
-                if ( !Directory.Exists( localPath ) )
-                {
-                    Debug.WriteLine( "Not running test, requires Cliloc.enu" );
-                    return;
-                }
+            SkillsTabViewModel vm = new SkillsTabViewModel();
 
-                SkillsTabViewModel vm = new SkillsTabViewModel();
+            Options options = Options.CurrentOptions;
 
-                Options options = Options.CurrentOptions;
+            Skills.Initialize( localPath );
 
-                Skills.Initialize( localPath );
-
-                JObject json = new JObject
+            JObject json = new JObject
                 {
                     {
                         "Skills",
@@ -55,15 +50,14 @@ namespace ClassicAssist.Tests
                     }
                 };
 
-                vm.Deserialize( json, options );
-                vm.Deserialize( json, options );
+            vm.Deserialize( json, options );
+            vm.Deserialize( json, options );
 
-                HotkeyManager hotkeys = HotkeyManager.GetInstance();
+            HotkeyManager hotkeys = HotkeyManager.GetInstance();
 
-                int count = hotkeys.Items.Count( hk => hk.IsCategory && hk.Name == Strings.Skills );
+            int count = hotkeys.Items.Count( hk => hk.IsCategory && hk.Name == Strings.Skills );
 
-                Assert.AreEqual( 1, count );
-            } );
+            Assert.AreEqual( 1, count );
         }
     }
 }

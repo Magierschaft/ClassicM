@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Assistant;
+﻿using Assistant;
 using ClassicAssist.Data.Counters;
 using ClassicAssist.Data.Macros.Commands;
 using ClassicAssist.Data.Organizer;
@@ -9,6 +6,9 @@ using ClassicAssist.UO.Data;
 using ClassicAssist.UO.Network.PacketFilter;
 using ClassicAssist.UO.Objects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ClassicAssist.Tests.MacroCommands
 {
@@ -47,240 +47,222 @@ namespace ClassicAssist.Tests.MacroCommands
         [TestMethod]
         public void WillOrganizeLimitAmount()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WillOrganizeLimitAmount", AppDomain.CurrentDomain.Evidence,
-                AppDomain.CurrentDomain.SetupInformation );
+            Engine.ClientVersion = new Version( 7, 0, 0, 0 );
+            Dictionary<int, int> serialAmount = new Dictionary<int, int>();
 
-            appDomain.DoCallBack( () =>
+            void OnInternalPacketSentEvent( byte[] data, int length )
             {
-                Engine.ClientVersion = new Version( 7, 0, 0, 0 );
-                Dictionary<int, int> serialAmount = new Dictionary<int, int>();
-
-                void OnInternalPacketSentEvent( byte[] data, int length )
+                if ( data[0] == 0x07 )
                 {
-                    if ( data[0] == 0x07 )
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int amount = ( data[5] << 8 ) | data[6];
+
+                    if ( serialAmount.ContainsKey( serial ) )
                     {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int amount = ( data[5] << 8 ) | data[6];
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            serialAmount.Remove( serial );
-                        }
-
-                        serialAmount.Add( serial, amount );
+                        serialAmount.Remove( serial );
                     }
 
-                    if ( data[0] == 0x08 )
-                    {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
-
-                        Item sourceItem = Engine.Items.GetItem( serial );
-                        Item containerItem = Engine.Items.GetItem( containerSerial );
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            sourceItem.Count = serialAmount[serial];
-                        }
-
-                        containerItem.Container.Add( sourceItem );
-                    }
+                    serialAmount.Add( serial, amount );
                 }
 
-                Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
+                if ( data[0] == 0x08 )
+                {
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
 
-                OrganizerEntry entry = new OrganizerEntry();
+                    Item sourceItem = Engine.Items.GetItem( serial );
+                    Item containerItem = Engine.Items.GetItem( containerSerial );
 
-                entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = 10 } );
+                    if ( serialAmount.ContainsKey( serial ) )
+                    {
+                        sourceItem.Count = serialAmount[serial];
+                    }
 
-                Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
-                sourceContainer.Container.Add(
-                    new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = 5, Owner = 0x40000004 } );
-                sourceContainer.Container.Add(
-                    new Item( 0x40000006, 0x40000004 ) { ID = 0xff, Count = 100, Owner = 0x40000004 } );
+                    containerItem.Container.Add( sourceItem );
+                }
+            }
 
-                Engine.Items.Add( sourceContainer );
+            Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
 
-                Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
+            OrganizerEntry entry = new OrganizerEntry();
 
-                Engine.Items.Add( destinationContainer );
+            entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = 10 } );
 
-                entry.SourceContainer = sourceContainer.Serial;
-                entry.DestinationContainer = destinationContainer.Serial;
+            Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
+            sourceContainer.Container.Add(
+                new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = 5, Owner = 0x40000004 } );
+            sourceContainer.Container.Add(
+                new Item( 0x40000006, 0x40000004 ) { ID = 0xff, Count = 100, Owner = 0x40000004 } );
 
-                Engine.PacketWaitEntries = new PacketWaitEntries();
+            Engine.Items.Add( sourceContainer );
 
-                OrganizerManager.GetInstance().Organize( entry ).Wait();
+            Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
 
-                Item[] destinationItems = destinationContainer.Container.GetItems();
+            Engine.Items.Add( destinationContainer );
 
-                Assert.AreEqual( entry.Items[0].Amount,
-                    destinationItems.Sum( i => i.ID == entry.Items[0].ID ? i.Count : 0 ) );
+            entry.SourceContainer = sourceContainer.Serial;
+            entry.DestinationContainer = destinationContainer.Serial;
 
-                Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
-                Engine.Items.Clear();
-                Engine.PacketWaitEntries = null;
-            } );
+            Engine.PacketWaitEntries = new PacketWaitEntries();
+
+            OrganizerManager.GetInstance().Organize( entry ).Wait();
+
+            Item[] destinationItems = destinationContainer.Container.GetItems();
+
+            Assert.AreEqual( entry.Items[0].Amount,
+                destinationItems.Sum( i => i.ID == entry.Items[0].ID ? i.Count : 0 ) );
+
+            Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
+            Engine.Items.Clear();
+            Engine.PacketWaitEntries = null;
         }
 
         [TestMethod]
         public void WillOrganizeNoLimit()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WillOrganizeNoLimit", AppDomain.CurrentDomain.Evidence,
-                AppDomain.CurrentDomain.SetupInformation );
+            Engine.ClientVersion = new Version( 7, 0, 0, 0 );
+            Dictionary<int, int> serialAmount = new Dictionary<int, int>();
 
-            appDomain.DoCallBack( () =>
+            void OnInternalPacketSentEvent( byte[] data, int length )
             {
-                Engine.ClientVersion = new Version( 7, 0, 0, 0 );
-                Dictionary<int, int> serialAmount = new Dictionary<int, int>();
-
-                void OnInternalPacketSentEvent( byte[] data, int length )
+                if ( data[0] == 0x07 )
                 {
-                    if ( data[0] == 0x07 )
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int amount = ( data[5] << 8 ) | data[6];
+
+                    if ( serialAmount.ContainsKey( serial ) )
                     {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int amount = ( data[5] << 8 ) | data[6];
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            serialAmount.Remove( serial );
-                        }
-
-                        serialAmount.Add( serial, amount );
+                        serialAmount.Remove( serial );
                     }
 
-                    if ( data[0] == 0x08 )
-                    {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
-
-                        Item sourceItem = Engine.Items.GetItem( serial );
-                        Item containerItem = Engine.Items.GetItem( containerSerial );
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            sourceItem.Count = serialAmount[serial];
-                        }
-
-                        containerItem.Container.Add( sourceItem );
-                    }
+                    serialAmount.Add( serial, amount );
                 }
 
-                Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
+                if ( data[0] == 0x08 )
+                {
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
 
-                OrganizerEntry entry = new OrganizerEntry();
+                    Item sourceItem = Engine.Items.GetItem( serial );
+                    Item containerItem = Engine.Items.GetItem( containerSerial );
 
-                entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = -1 } );
+                    if ( serialAmount.ContainsKey( serial ) )
+                    {
+                        sourceItem.Count = serialAmount[serial];
+                    }
 
-                int amnt = 13013;
+                    containerItem.Container.Add( sourceItem );
+                }
+            }
 
-                Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
-                sourceContainer.Container.Add(
-                    new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = amnt, Owner = 0x40000004 } );
+            Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
 
-                Engine.Items.Add( sourceContainer );
+            OrganizerEntry entry = new OrganizerEntry();
 
-                Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
+            entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = -1 } );
 
-                Engine.Items.Add( destinationContainer );
+            int amnt = 13013;
 
-                entry.SourceContainer = sourceContainer.Serial;
-                entry.DestinationContainer = destinationContainer.Serial;
+            Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
+            sourceContainer.Container.Add(
+                new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = amnt, Owner = 0x40000004 } );
 
-                Engine.PacketWaitEntries = new PacketWaitEntries();
+            Engine.Items.Add( sourceContainer );
 
-                OrganizerManager.GetInstance().Organize( entry ).Wait();
+            Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
 
-                Item[] destinationItems = destinationContainer.Container.GetItems();
+            Engine.Items.Add( destinationContainer );
 
-                Assert.AreEqual( amnt, destinationItems.Sum( i => i.Count ) );
+            entry.SourceContainer = sourceContainer.Serial;
+            entry.DestinationContainer = destinationContainer.Serial;
 
-                Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
-                Engine.Items.Clear();
-                Engine.PacketWaitEntries = null;
-            } );
+            Engine.PacketWaitEntries = new PacketWaitEntries();
+
+            OrganizerManager.GetInstance().Organize( entry ).Wait();
+
+            Item[] destinationItems = destinationContainer.Container.GetItems();
+
+            Assert.AreEqual( amnt, destinationItems.Sum( i => i.Count ) );
+
+            Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
+            Engine.Items.Clear();
+            Engine.PacketWaitEntries = null;
         }
 
         [TestMethod]
         public void WillOrganizeNoLimitMultiple()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WillOrganizeNoLimitMultiple",
-                AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation );
+            Engine.ClientVersion = new Version( 7, 0, 0, 0 );
+            Dictionary<int, int> serialAmount = new Dictionary<int, int>();
 
-            appDomain.DoCallBack( () =>
+            void OnInternalPacketSentEvent( byte[] data, int length )
             {
-                Engine.ClientVersion = new Version( 7, 0, 0, 0 );
-                Dictionary<int, int> serialAmount = new Dictionary<int, int>();
-
-                void OnInternalPacketSentEvent( byte[] data, int length )
+                if ( data[0] == 0x07 )
                 {
-                    if ( data[0] == 0x07 )
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int amount = ( data[5] << 8 ) | data[6];
+
+                    if ( serialAmount.ContainsKey( serial ) )
                     {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int amount = ( data[5] << 8 ) | data[6];
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            serialAmount.Remove( serial );
-                        }
-
-                        serialAmount.Add( serial, amount );
+                        serialAmount.Remove( serial );
                     }
 
-                    if ( data[0] == 0x08 )
-                    {
-                        int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
-                        int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
-
-                        Item sourceItem = Engine.Items.GetItem( serial );
-                        Item containerItem = Engine.Items.GetItem( containerSerial );
-
-                        if ( serialAmount.ContainsKey( serial ) )
-                        {
-                            sourceItem.Count = serialAmount[serial];
-                        }
-
-                        containerItem.Container.Add( sourceItem );
-                    }
+                    serialAmount.Add( serial, amount );
                 }
 
-                Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
+                if ( data[0] == 0x08 )
+                {
+                    int serial = ( data[1] << 24 ) | ( data[2] << 16 ) | ( data[3] << 8 ) | data[4];
+                    int containerSerial = ( data[11] << 24 ) | ( data[12] << 16 ) | ( data[13] << 8 ) | data[14];
 
-                OrganizerEntry entry = new OrganizerEntry();
+                    Item sourceItem = Engine.Items.GetItem( serial );
+                    Item containerItem = Engine.Items.GetItem( containerSerial );
 
-                entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = -1 } );
-                entry.Items.Add( new OrganizerItem { ID = 0xfe, Item = "Shmoo", Amount = -1 } );
+                    if ( serialAmount.ContainsKey( serial ) )
+                    {
+                        sourceItem.Count = serialAmount[serial];
+                    }
 
-                int amnt = 13013;
+                    containerItem.Container.Add( sourceItem );
+                }
+            }
 
-                Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
-                sourceContainer.Container.Add(
-                    new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = amnt, Owner = 0x40000004 } );
-                sourceContainer.Container.Add(
-                    new Item( 0x40000006, 0x40000004 ) { ID = 0xfe, Count = amnt, Owner = 0x40000004 } );
+            Engine.InternalPacketSentEvent += OnInternalPacketSentEvent;
 
-                Engine.Items.Add( sourceContainer );
+            OrganizerEntry entry = new OrganizerEntry();
 
-                Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
+            entry.Items.Add( new OrganizerItem { ID = 0xff, Item = "Shmoo", Amount = -1 } );
+            entry.Items.Add( new OrganizerItem { ID = 0xfe, Item = "Shmoo", Amount = -1 } );
 
-                Engine.Items.Add( destinationContainer );
+            int amnt = 13013;
 
-                entry.SourceContainer = sourceContainer.Serial;
-                entry.DestinationContainer = destinationContainer.Serial;
+            Item sourceContainer = new Item( 0x40000004 ) { Container = new ItemCollection( 0x40000004 ) };
+            sourceContainer.Container.Add(
+                new Item( 0x40000005, 0x40000004 ) { ID = 0xff, Count = amnt, Owner = 0x40000004 } );
+            sourceContainer.Container.Add(
+                new Item( 0x40000006, 0x40000004 ) { ID = 0xfe, Count = amnt, Owner = 0x40000004 } );
 
-                Engine.PacketWaitEntries = new PacketWaitEntries();
+            Engine.Items.Add( sourceContainer );
 
-                OrganizerManager.GetInstance().Organize( entry ).Wait();
+            Item destinationContainer = new Item( 0x40000007 ) { Container = new ItemCollection( 0x40000007 ) };
 
-                Item[] destinationItems = destinationContainer.Container.GetItems();
+            Engine.Items.Add( destinationContainer );
 
-                Assert.AreEqual( 2, destinationContainer.Container.GetTotalItemCount() );
-                Assert.AreEqual( amnt * 2, destinationItems.Sum( i => i.Count ) );
+            entry.SourceContainer = sourceContainer.Serial;
+            entry.DestinationContainer = destinationContainer.Serial;
 
-                Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
-                Engine.Items.Clear();
-                Engine.PacketWaitEntries = null;
-            } );
+            Engine.PacketWaitEntries = new PacketWaitEntries();
+
+            OrganizerManager.GetInstance().Organize( entry ).Wait();
+
+            Item[] destinationItems = destinationContainer.Container.GetItems();
+
+            Assert.AreEqual( 2, destinationContainer.Container.GetTotalItemCount() );
+            Assert.AreEqual( amnt * 2, destinationItems.Sum( i => i.Count ) );
+
+            Engine.InternalPacketSentEvent -= OnInternalPacketSentEvent;
+            Engine.Items.Clear();
+            Engine.PacketWaitEntries = null;
         }
     }
 }

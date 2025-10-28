@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Assistant;
+﻿using Assistant;
 using ClassicAssist.Data;
 using ClassicAssist.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace ClassicAssist.Tests
 {
@@ -20,19 +20,13 @@ namespace ClassicAssist.Tests
         [TestMethod]
         public void WontThrowExceptionOnDeserializeNullConfig()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WontThrowExceptionOnDeserializeNullConfig",
-                AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation );
-
-            appDomain.DoCallBack( () => TestConfig( null ) );
+            TestConfig( null );
         }
 
         [TestMethod]
         public void WontThrowExceptionOnDeserializeEmptyConfig()
         {
-            AppDomain appDomain = AppDomain.CreateDomain( "WontThrowExceptionOnDeserializeEmptyConfig",
-                AppDomain.CurrentDomain.Evidence, AppDomain.CurrentDomain.SetupInformation );
-
-            appDomain.DoCallBack( () => TestConfig( new JObject() ) );
+            TestConfig( new JObject() );
         }
 
         public void TestConfig( JObject json )

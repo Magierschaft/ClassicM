@@ -39,7 +39,7 @@ jobs:
       run: dotnet build .\Tools\ExportCommands\ExportCommands.csproj
     - name: Generate Docs
       run: |
-          cd Output\net48
+          cd Output\net9.0-windows
           $fullPath = (Get-Location).Path
           .\ExportCommands.exe $fullPath\ClassicAssist.dll
     - name: Update Wiki
@@ -47,7 +47,7 @@ jobs:
           git config --global user.email "actions@localhost"
           git config --global user.name "Update Wiki Action"
           cd ${{ github.event.repository.name }}.wiki
-          copy ..\Output\net48\Docs\*.md .
+          copy ..\Output\net9.0-windows\Docs\*.md .
           git add *
           git commit -m "Update Wiki"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git

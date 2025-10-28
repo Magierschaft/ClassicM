@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\Output\</OutputPath>
     <UseWPF>true</UseWPF>
     <Configurations>Debug;Release;Develop</Configurations>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <BuildDate>$([System.DateTime]::op_Subtraction($([System.DateTime]::get_Now().get_Date()),$([System.DateTime]::new(2020,7,3))).get_TotalDays())</BuildDate>
+    <Version>0.5.0-develop+$(BuildDate)</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Data\Bodies.json" />
@@ -19,6 +21,27 @@
     <None Remove="Python.xshd" />
     <None Remove="zlib32.dll" />
     <None Remove="zlib64.dll" />
+    <PackageReference Include="AnimatedGif" Version="1.0.5" />
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+    <PackageReference Include="Crc32.NET" Version="1.2.0" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.72.0.3938" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="IronPython" Version="3.4.2" />
+    <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
+    <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="MegaApiClient" Version="1.10.5" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.78.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Octokit" Version="14.0.0" />
+    <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
+    <PackageReference Include="Sentry" Version="5.16.1" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.10" />
+    <PackageReference Include="System.Resources.Extensions" Version="9.0.10" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageReference Include="VirtualizingWrapPanel" Version="2.3.2" />
+    <PackageReference Include="WebDav.Client" Version="2.9.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Properties.json">
@@ -58,30 +81,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AnimatedGif" Version="1.0.5" />
-    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
-    <PackageReference Include="Crc32.NET" Version="1.2.0" />
-    <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.72.0.3938" />
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
-    <PackageReference Include="IronPython" Version="3.4.2" />
-    <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
-    <PackageReference Include="LiteDB" Version="5.0.21" />
-    <PackageReference Include="MegaApiClient" Version="1.10.5" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.78.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Octokit" Version="14.0.0" />
-    <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
-    <PackageReference Include="Sentry" Version="5.16.1" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.10" />
-    <PackageReference Include="System.Memory" Version="4.6.3" />
-    <PackageReference Include="System.Resources.Extensions" Version="9.0.10" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
-    <PackageReference Include="VirtualizingWrapPanel" Version="2.3.2" />
-    <PackageReference Include="WebDav.Client" Version="2.9.0" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ClassicAssist.Controls\ClassicAssist.Controls.csproj" />
     <ProjectReference Include="..\ClassicAssist.Shared\ClassicAssist.Shared.csproj" />
   </ItemGroup>
@@ -90,7 +89,7 @@
       <HintPath>cuoapi.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\Output\net48\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\Output\net9.0-windows\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
   </ItemGroup>

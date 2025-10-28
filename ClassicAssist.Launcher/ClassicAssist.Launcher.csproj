@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <BuildDate>$([System.DateTime]::op_Subtraction($([System.DateTime]::get_Now().get_Date()),$([System.DateTime]::new(2020,7,3))).get_TotalDays())</BuildDate>
     <Version>0.5.0-develop+$(BuildDate)</Version>
-	<ApplicationIcon>..\ClassicAssist.Shared\Resources\logo.ico</ApplicationIcon>
+    <ApplicationIcon>..\ClassicAssist.Shared\Resources\logo.ico</ApplicationIcon>
     <Product>ClassicAssist Launcher</Product>
     <Authors>Reetus</Authors>
     <Company>Reetus</Company>
@@ -30,16 +30,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ClassicAssist.Controls\ClassicAssist.Controls.csproj" />
     <ProjectReference Include="..\ClassicAssist.Shared\ClassicAssist.Shared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

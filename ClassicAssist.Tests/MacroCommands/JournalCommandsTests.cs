@@ -6,9 +6,7 @@ using ClassicAssist.UO.Data;
 using ClassicAssist.UO.Network;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Web.UI.WebControls;
 
 namespace ClassicAssist.Tests.MacroCommands
 {
